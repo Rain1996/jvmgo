@@ -14,6 +14,9 @@ type ClassFile struct {
 	thisClass    uint16
 	superClass   uint16
 	interfaces   []uint16
+	fields       []*MemberInfo
+	methods      []*MemberInfo
+	attributes   []AttributeInfo
 }
 
 func (cf *ClassFile) MinorVersion() uint16 {
@@ -32,8 +35,23 @@ func (cf *ClassFile) AccessFlags() uint16 {
 	return cf.accessFlags
 }
 
+func (cf *ClassFile) Fields() []*MemberInfo {
+	return cf.fields
+}
+func (cf *ClassFile) Methods() []*MemberInfo {
+	return cf.methods
+}
+
 func (cf *ClassFile) ClassName() string {
 	return cf.constantPool.getClassName(cf.thisClass)
+}
+
+func (cf *ClassFile) InterfaceNames() []string {
+	interfaceNames := make([]string, len(cf.interfaces))
+	for i, cpIndex := range cf.interfaces {
+		interfaceNames[i] = cf.constantPool.getClassName(cpIndex)
+	}
+	return interfaceNames
 }
 
 func (cf *ClassFile) SuperClassName() string {
@@ -73,6 +91,9 @@ func (cf *ClassFile) read(reader *ClassReader) {
 	cf.thisClass = reader.readUint16()
 	cf.superClass = reader.readUint16()
 	cf.interfaces = reader.readUint16s()
+	cf.fields = readMembers(reader, cf.constantPool)
+	cf.methods = readMembers(reader, cf.constantPool)
+	cf.attributes = readAttributes(reader, cf.constantPool)
 }
 
 // Parse parse class data

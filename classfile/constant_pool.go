@@ -8,10 +8,10 @@ func readConstantPool(reader *ClassReader) ConstantPool {
 
 	for i := 1; i < cpCount; i++ {
 		cp[i] = readConstantInfo(reader, cp)
-		// switch cp[i].(type) {
-		// case *ConstantLongInfo, ConstantDoubleInfo:
-		// 	i++
-		// }
+		switch cp[i].(type) {
+		case *ConstantLongInfo, *ConstantDoubleInfo:
+			i++
+		}
 	}
 	return cp
 }

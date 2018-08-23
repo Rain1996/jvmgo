@@ -22,11 +22,38 @@ type ConstantInfo interface {
 }
 
 func newConstantInfo(tag uint8, cp ConstantPool) ConstantInfo {
-	// switch tag {
-	// default:
-	// 	painc("java.lang.ClassFormatError: constant pool tag!")
-	// }
-	return nil
+	switch tag {
+	case ConstantInteger:
+		return &ConstantIntegerInfo{}
+	case ConstantFloat:
+		return &ConstantFloatInfo{}
+	case ConstantLong:
+		return &ConstantLongInfo{}
+	case ConstantDouble:
+		return &ConstantDoubleInfo{}
+	case ConstantUtf8:
+		return &ConstantUtf8Info{}
+	case ConstantString:
+		return &ConstantStringInfo{cp: cp}
+	case ConstantClass:
+		return &ConstantClassInfo{cp: cp}
+	case ConstantFieldRef:
+		return &ConstantFieldRefInfo{ConstantMemberRefInfo{cp: cp}}
+	case ConstantMethodRef:
+		return &ConstantMethodRefInfo{ConstantMemberRefInfo{cp: cp}}
+	case ConstantInterfaceMethodRef:
+		return &ConstantInterfaceMethodRefInfo{ConstantMemberRefInfo{cp: cp}}
+	case ConstantNameAndType:
+		return &ConstantNameAndTypeInfo{}
+	case ConstantMethodType:
+		return &ConstantMethodTypeInfo{}
+	case ConstantMethodHandle:
+		return &ConstantMethodHandleInfo{}
+	case ConstantInvokeDynamic:
+		return &ConstantInvokeDynamicInfo{}
+	default:
+		panic("java.lang.ClassFormatError: constant pool tag!")
+	}
 }
 
 func readConstantInfo(reader *ClassReader, cp ConstantPool) ConstantInfo {

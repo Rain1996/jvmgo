@@ -1,5 +1,10 @@
 package classfile
 
+var (
+	_attrDeprecated = &DeprecatedAttribute{}
+	_attrSynthetic  = &SyntheticAttribute{}
+)
+
 type AttributeInfo interface {
 	readInfo(reader *ClassReader)
 }
@@ -24,6 +29,30 @@ func readAttribute(reader *ClassReader, cp ConstantPool) AttributeInfo {
 
 func newAttributeInfo(attrName string, attrLen uint32, cp ConstantPool) AttributeInfo {
 	switch attrName {
+	case "BootstrapMethods":
+		return &BootstrapMethodsAttribute{}
+	case "Code":
+		return &CodeAttribute{cp: cp}
+	case "ConstantValue":
+		return &ConstantValueAttribute{}
+	case "Deprecated":
+		return &DeprecatedAttribute{}
+	case "EnclosingMethod":
+		return &EnclosingMethodAttribute{}
+	case "Exceptions":
+		return &ExceptionsAttribute{}
+	case "LineNumberTable":
+		return &LineNumberTableAttribute{}
+	case "LocalVariableTable":
+		return &LocalVariableTableAttribute{}
+	case "LocalVariableTypeTable":
+		return &LocalVariableTypeTableAttribute{}
+	case "Signature":
+		return &SignatureAttribute{cp: cp}
+	case "SourceFile":
+		return &SourceFileAttribute{cp: cp}
+	case "Synthetic":
+		return _attrSynthetic
 	default:
 		return &UnparsedAttribute{attrName, attrLen, nil}
 	}
